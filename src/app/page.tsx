@@ -88,28 +88,41 @@ export default function Home() {
 
   /** TODO: use tailwindcss to add a more modern design */
   return (
-    <main style={{ margin: "24px" }}>
-      <h1>Solace Advocates</h1>
-      <br />
-      <br />
-      <div>
-        <p>Search</p>
-        <p>
-          Searching for: <span id="search-term"></span>
-        </p>
+    <main className="max-w-7xl bg-blue-50 mx-auto p-6">
+      {/* TITLE SECTION */}
+      <h1 className="text-2xl font-bold mb-6">Solace Advocates</h1>
+
+      {/* SEARCH SECTION */}
+      <div className="mb-10">
+        <label
+          htmlFor="searchbar"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Search Advocates
+        </label>
         <input
           id="searchbar"
           type="text"
+          // lets make this look a little nicer
+          className="w-full px-4 py-2 border border-gray-300 rounded-3xl focus:outline-none focus:ring-2 focus:ring-teal-500"
           placeholder="Search by name, city, or specialty..."
           value={searchTerm}
-          style={{ border: "1px solid black" }}
           onChange={handleSearchInput}
         />
       </div>
-      <br />
-      <br />
 
-      {loading && <p>Loading...</p>}
+      {/* DATA SECTION */}
+      {loading && <p>Loading advocates...</p>}
+      {error && (
+        <div className="bg-red-100 rounded-xl p-3 m-8">
+          <p className="text-red-500 text-md font-bold">
+            TODO: Replace this with an error handling class and graceful
+            degredation: {error}
+          </p>
+        </div>
+      )}
+
+      {/* ADVOCATES TABLE (will be own component) */}
       <table>
         <thead>
           <th>First Name</th>
