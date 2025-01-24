@@ -2,45 +2,91 @@
 
 import { useEffect, useState } from "react";
 
-export default function Home() {
-  const [advocates, setAdvocates] = useState([]);
-  const [filteredAdvocates, setFilteredAdvocates] = useState([]);
+/** typescript interface for Advocate / type safety */
+interface Advocate {
+  id: number;
+  firstName: string;
+  lastName: string;
+  city: string;
+  degree: string;
+  specialties: string[];
+  yearsOfExperience: number;
+  phoneNumber: number;
+}
 
+interface AdvocateAPIResponse {
+  data: Advocate[];
+}
+
+export default function Home() {
+  /** advocate states (initially empty, will gracefully degrade if fetch fails) */
+  const [advocates, setAdvocates] = useState<Advocate[]>([]);
+  const [filteredAdvocates, setFilteredAdvocates] = useState<Advocate[]>([]);
+  /** search states */
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  /** loading state and error handling */
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  /** initial default fetch -> get advocates from the backend */
+  /** TODO:
+   * create a dedicated fetch function to run async
+   * x use async/awaitd
+   * x handle errors
+   * x handle loading
+   * - eventually we will have pagination to prepare for large data (scaling)
+   */
   useEffect(() => {
-    console.log("fetching advocates...");
-    fetch("/api/advocates").then((response) => {
-      response.json().then((jsonResponse) => {
-        setAdvocates(jsonResponse.data);
-        setFilteredAdvocates(jsonResponse.data);
-      });
-    });
+    /** fetch advocates */
+    const fetchAdvocates = async (): Promise<void> => {
+      setLoading(true);
+      setError(null);
+      /** try / catch */
+      try {
+        const response = await fetch("/api/advocates");
+        if (!response.ok) throw new Error("Failed to fetch advocates");
+        const advocates: AdvocateAPIResponse = await response.json();
+        setAdvocates(advocates.data);
+        setFilteredAdvocates(advocates.data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAdvocates();
   }, []);
 
-  const onChange = (e) => {
-    const searchTerm = e.target.value;
+  /** TODO:
+   *  x get rid of the direct DOM manipulations and use react state instead
+   *  x create a better name for this function -> handleSearch
+   *  x handle filtering with better UX
+   *  x handle errors
+   *  - make sure it's debounced for better UX
+   *  - move filtering to the backend for performance?
+   */
+  const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const searchTerm: string = e.target.value.toLowerCase(); // normalize this
 
-    document.getElementById("search-term").innerHTML = searchTerm;
-
-    console.log("filtering advocates...");
-    const filteredAdvocates = advocates.filter((advocate) => {
+    /** filtering code */
+    const filteredAdvocates: Advocate[] = advocates.filter((advocate) => {
       return (
-        advocate.firstName.includes(searchTerm) ||
-        advocate.lastName.includes(searchTerm) ||
-        advocate.city.includes(searchTerm) ||
-        advocate.degree.includes(searchTerm) ||
-        advocate.specialties.includes(searchTerm) ||
-        advocate.yearsOfExperience.includes(searchTerm)
+        advocate.firstName.toLowerCase().includes(searchTerm) ||
+        advocate.lastName.toLowerCase().includes(searchTerm) ||
+        advocate.city.toLowerCase().includes(searchTerm) ||
+        advocate.degree.toLowerCase().includes(searchTerm) ||
+        advocate.specialties.some((specialty) =>
+          specialty.toLowerCase().includes(searchTerm)
+        )
       );
     });
 
+    /** set advocate states */
+    setSearchTerm(searchTerm);
     setFilteredAdvocates(filteredAdvocates);
   };
 
-  const onClick = () => {
-    console.log(advocates);
-    setFilteredAdvocates(advocates);
-  };
-
+  /** TODO: use tailwindcss to add a more modern design */
   return (
     <main style={{ margin: "24px" }}>
       <h1>Solace Advocates</h1>
@@ -51,11 +97,19 @@ export default function Home() {
         <p>
           Searching for: <span id="search-term"></span>
         </p>
-        <input style={{ border: "1px solid black" }} onChange={onChange} />
-        <button onClick={onClick}>Reset Search</button>
+        <input
+          id="searchbar"
+          type="text"
+          placeholder="Search by name, city, or specialty..."
+          value={searchTerm}
+          style={{ border: "1px solid black" }}
+          onChange={handleSearchInput}
+        />
       </div>
       <br />
       <br />
+
+      {loading && <p>Loading...</p>}
       <table>
         <thead>
           <th>First Name</th>

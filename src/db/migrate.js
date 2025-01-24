@@ -2,6 +2,9 @@ const { drizzle } = require("drizzle-orm/postgres-js");
 const { migrate } = require("drizzle-orm/postgres-js/migrator");
 const postgres = require("postgres");
 
+/** we can ignore this file as it's a custom script for handling migrations
+ * -> CI/CD pipelines?
+ */
 const runMigration = async () => {
   if (!process.env.DATABASE_URL) throw new Error("DATABASE_URL is not set");
 
