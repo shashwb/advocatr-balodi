@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from "react";
 
-/** typescript interface for Advocate / type safety */
+/**
+ * IMPROVEMENTS:
+ *  + ensure strong typing using TS
+ *  + add error handling and preparation to separate components
+ *  + replaced direct DOM manipulation (anti-pattern)
+ *  + implmeneted consistent styling using Tailwind
+ *  + applicaiton is generally cleaned up and ready for new features
+ */
+
 interface Advocate {
   id: number;
   firstName: string;
@@ -28,14 +36,6 @@ export default function Home() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  /** initial default fetch -> get advocates from the backend */
-  /** TODO:
-   * create a dedicated fetch function to run async
-   * x use async/awaitd
-   * x handle errors
-   * x handle loading
-   * - eventually we will have pagination to prepare for large data (scaling)
-   */
   useEffect(() => {
     /**
      * Fetches advocates from the backend API
@@ -87,7 +87,7 @@ export default function Home() {
     setFilteredAdvocates(filteredAdvocates);
   };
 
-  /** strings are in order */
+  /** as long as keys are strings, we ensure order */
   const headersMap = {
     firstName: "First Name",
     lastName: "Last Name",
@@ -98,14 +98,27 @@ export default function Home() {
     phoneNumber: "Phone",
   };
 
-  const tableHeaderCell = (header: string) => (
+  /**
+   * @param {string} header - The table header string
+   * @returns {JSX.Element} A <th> element with the header string
+   */
+  const tableHeaderCell = (header: string): JSX.Element => (
     <th key={header} className="border border-gray-300 px-4 py-2">
       {header}
     </th>
   );
 
-  const tableDataCell = (advocate: Advocate, key: string) => {
-    const cellValue = advocate[key as keyof Advocate];
+  /**
+   * Creates a <td> element with the value of the given advocate and key.
+   * @param {Advocate} advocate - The advocate object
+   * @param {keyof Advocate} key - The key of the advocate object
+   * @returns {JSX.Element} A <td> element with the value of the given advocate and key
+   */
+  const tableDataCell = (
+    advocate: Advocate,
+    key: keyof Advocate
+  ): JSX.Element => {
+    const cellValue = advocate[key];
     return (
       <td key={advocate.id} className="border border-gray-300 px-4 py-2">
         {Array.isArray(cellValue) ? cellValue.join(", ") : cellValue}
@@ -113,10 +126,6 @@ export default function Home() {
     );
   };
 
-  /** TODO:
-   * - use tailwindcss to add a more modern design
-   * - create new components for each section
-   */
   return (
     <div className="max-w-7xl mx-auto p-2">
       {/* TITLE SECTION */}
@@ -164,7 +173,7 @@ export default function Home() {
             return (
               <tr>
                 {Object.keys(headersMap).map((headerKey) =>
-                  tableDataCell(advocate, headerKey)
+                  tableDataCell(advocate, headerKey as keyof Advocate)
                 )}
               </tr>
             );
