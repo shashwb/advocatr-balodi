@@ -10,5 +10,14 @@ services:
       - psql:/var/lib/postgresql/data
     ports:
       - 5432:5432
+    # TODO:
+    #   can make this easier to configure for other developers
+    #   if we set up db and table as part of the build like so:
+    #     start postgres server, create database, postgres process takes over
+    # command: >
+    #   sh -c "
+    #   psql -U postgres -c 'CREATE DATABASE IF NOT EXISTS solaceassignment;' &&
+    #   postgres
+    #   "
 volumes:
   psql:

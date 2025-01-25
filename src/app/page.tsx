@@ -2,90 +2,184 @@
 
 import { useEffect, useState } from "react";
 
+/**
+ * IMPROVEMENTS:
+ *  + ensure strong typing using TS
+ *  + add error handling and preparation to separate components
+ *  + replaced direct DOM manipulation (anti-pattern)
+ *  + implmeneted consistent styling using Tailwind
+ *  + applicaiton is generally cleaned up and ready for new features
+ */
+
+interface Advocate {
+  id: number;
+  firstName: string;
+  lastName: string;
+  city: string;
+  degree: string;
+  specialties: string[];
+  yearsOfExperience: number;
+  phoneNumber: number;
+}
+
+interface AdvocateAPIResponse {
+  data: Advocate[];
+}
+
 export default function Home() {
-  const [advocates, setAdvocates] = useState([]);
-  const [filteredAdvocates, setFilteredAdvocates] = useState([]);
+  /** advocate states (initially empty, will gracefully degrade if fetch fails) */
+  const [advocates, setAdvocates] = useState<Advocate[]>([]);
+  const [filteredAdvocates, setFilteredAdvocates] = useState<Advocate[]>([]);
+  /** search states */
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  /** loading state and error handling */
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log("fetching advocates...");
-    fetch("/api/advocates").then((response) => {
-      response.json().then((jsonResponse) => {
-        setAdvocates(jsonResponse.data);
-        setFilteredAdvocates(jsonResponse.data);
-      });
-    });
+    /**
+     * Fetches advocates from the backend API
+     *
+     * @param {void} No arguments
+     * @returns {Promise<void>} Resolves when the fetch is complete, rejects on error
+     */
+    const fetchAdvocates = async (): Promise<void> => {
+      setLoading(true);
+      setError(null);
+      /** try / catch */
+      try {
+        const response = await fetch("/api/advocates");
+        if (!response.ok) throw new Error("Failed to fetch advocates");
+        const advocates: AdvocateAPIResponse = await response.json();
+        setAdvocates(advocates.data);
+        setFilteredAdvocates(advocates.data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAdvocates();
   }, []);
 
-  const onChange = (e) => {
-    const searchTerm = e.target.value;
+  /**
+   * Handles changes to the search input field
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The input change event
+   */
+  const handleSearchInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    const searchTerm = e.target.value.toLowerCase();
 
-    document.getElementById("search-term").innerHTML = searchTerm;
-
-    console.log("filtering advocates...");
     const filteredAdvocates = advocates.filter((advocate) => {
       return (
-        advocate.firstName.includes(searchTerm) ||
-        advocate.lastName.includes(searchTerm) ||
-        advocate.city.includes(searchTerm) ||
-        advocate.degree.includes(searchTerm) ||
-        advocate.specialties.includes(searchTerm) ||
-        advocate.yearsOfExperience.includes(searchTerm)
+        advocate.firstName.toLowerCase().includes(searchTerm) ||
+        advocate.lastName.toLowerCase().includes(searchTerm) ||
+        advocate.city.toLowerCase().includes(searchTerm) ||
+        advocate.degree.toLowerCase().includes(searchTerm) ||
+        advocate.specialties.some((specialty) =>
+          specialty.toLowerCase().includes(searchTerm)
+        )
       );
     });
 
+    setSearchTerm(searchTerm);
     setFilteredAdvocates(filteredAdvocates);
   };
 
-  const onClick = () => {
-    console.log(advocates);
-    setFilteredAdvocates(advocates);
+  /** as long as keys are strings, we ensure order */
+  const headersMap = {
+    firstName: "First Name",
+    lastName: "Last Name",
+    city: "City",
+    degree: "Degree",
+    specialties: "Specialties",
+    yearsOfExperience: "Experience",
+    phoneNumber: "Phone",
+  };
+
+  /**
+   * @param {string} header - The table header string
+   * @returns {JSX.Element} A <th> element with the header string
+   */
+  const tableHeaderCell = (header: string): JSX.Element => (
+    <th key={header} className="border border-gray-300 px-4 py-2">
+      {header}
+    </th>
+  );
+
+  /**
+   * Creates a <td> element with the value of the given advocate and key.
+   * @param {Advocate} advocate - The advocate object
+   * @param {keyof Advocate} key - The key of the advocate object
+   * @returns {JSX.Element} A <td> element with the value of the given advocate and key
+   */
+  const tableDataCell = (
+    advocate: Advocate,
+    key: keyof Advocate
+  ): JSX.Element => {
+    const cellValue = advocate[key];
+    return (
+      <td key={advocate.id} className="border border-gray-300 px-4 py-2">
+        {Array.isArray(cellValue) ? cellValue.join(", ") : cellValue}
+      </td>
+    );
   };
 
   return (
-    <main style={{ margin: "24px" }}>
-      <h1>Solace Advocates</h1>
-      <br />
-      <br />
-      <div>
-        <p>Search</p>
-        <p>
-          Searching for: <span id="search-term"></span>
-        </p>
-        <input style={{ border: "1px solid black" }} onChange={onChange} />
-        <button onClick={onClick}>Reset Search</button>
+    <div className="max-w-7xl mx-auto p-2">
+      {/* TITLE SECTION */}
+      <h1 className="text-2xl font-bold mb-6">Solace Advocates</h1>
+
+      {/* SEARCH SECTION */}
+      <div className="mb-10">
+        <label
+          htmlFor="searchbar"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Search Advocates
+        </label>
+        <input
+          id="searchbar"
+          type="text"
+          // lets make this look a little nicer
+          className="w-full px-4 py-2 border border-gray-300 rounded-3xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+          placeholder="Search by name, city, or specialty..."
+          value={searchTerm}
+          onChange={handleSearchInputChange}
+        />
       </div>
-      <br />
-      <br />
-      <table>
-        <thead>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>City</th>
-          <th>Degree</th>
-          <th>Specialties</th>
-          <th>Years of Experience</th>
-          <th>Phone Number</th>
+
+      {/* DATA SECTION */}
+      {loading && <p>Loading advocates...</p>}
+      {error && (
+        <div className="bg-red-100 rounded-xl p-3 m-8">
+          <p className="text-red-500 text-md font-bold">
+            TODO: Replace this with an error handling class and graceful
+            degredation: {error}
+          </p>
+        </div>
+      )}
+
+      {/* ADVOCATES TABLE (will be own component) */}
+      <table className="w-full table-auto border-collapse border border-gray-400 shadow-sm">
+        <thead className="bg-gray-100 text-gray-700">
+          {Object.values(headersMap).map((header) => {
+            return tableHeaderCell(header);
+          })}
         </thead>
         <tbody>
           {filteredAdvocates.map((advocate) => {
             return (
               <tr>
-                <td>{advocate.firstName}</td>
-                <td>{advocate.lastName}</td>
-                <td>{advocate.city}</td>
-                <td>{advocate.degree}</td>
-                <td>
-                  {advocate.specialties.map((s) => (
-                    <div>{s}</div>
-                  ))}
-                </td>
-                <td>{advocate.yearsOfExperience}</td>
-                <td>{advocate.phoneNumber}</td>
+                {Object.keys(headersMap).map((headerKey) =>
+                  tableDataCell(advocate, headerKey as keyof Advocate)
+                )}
               </tr>
             );
           })}
         </tbody>
       </table>
-    </main>
+    </div>
   );
 }
