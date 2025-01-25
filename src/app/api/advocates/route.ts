@@ -1,25 +1,23 @@
-import { PgSelectBase } from "drizzle-orm/pg-core";
 import db from "../../../db";
-import { advocates } from "../../../db/schema";
+import { advocates, Advocate } from "../../../db/schema";
 import { NextResponse } from "next/server";
 
 /**
  * IMPROVEMENTS:
  * + add typescript types
  * + replaced mocks with db query
- * + add error handling
+ * + add error handling and request/query result validation
  * + add pagination
  */
 
-interface Advocate {
-  id: number;
-  firstName: string;
-  lastName: string;
-  city: string;
-  degree: string;
-  specialties: string[];
-  yearsOfExperience: number;
-  phoneNumber: number;
+interface AdvocateServerResponse {
+  data: Advocate[];
+  pageNumber: number;
+  limit: number;
+}
+
+interface ErrorResponseBody {
+  error: string;
 }
 
 /**
@@ -27,30 +25,61 @@ interface Advocate {
  * @param request - The incoming HTTP request
  * @returns A promise that resolves to a NextResponse containing advocate data or an error message
  */
-export async function GET(request: Request): Promise<NextResponse> {
+export async function GET(
+  request: Request
+): Promise<
+  NextResponse<AdvocateServerResponse> | NextResponse<{ error: string }>
+> {
+  const MAX_LIMIT = 50;
   try {
     const url = new URL(request.url);
-    const pageParam: string | null = url.searchParams.get("page");
-    const limitParam: string | null = url.searchParams.get("limit");
-    const page: number = parseInt(pageParam || "1", 10);
-    const limit: number = parseInt(limitParam || "10", 10);
+    const pageParam = url.searchParams.get("page");
+    const limitParam = url.searchParams.get("limit");
+    const pageNumber = parseInt(pageParam || "1", 10);
+    const limit = parseInt(limitParam || "10", 10);
 
-    if (isNaN(page) || isNaN(limit) || page < 1 || limit < 1) {
-      return NextResponse.json(
-        { error: "Invalid page or limit parameter" },
+    if (isNaN(pageNumber) || pageNumber < 1) {
+      return NextResponse.json<ErrorResponseBody>(
+        { error: "Invalid page parameter: page must be a positive integer" },
         { status: 400 }
       );
     }
 
-    const offset: number = (page - 1) * limit;
-    const advocatesData: Advocate[] = await db
+    if (isNaN(limit) || limit <= 0 || limit > MAX_LIMIT) {
+      return NextResponse.json<ErrorResponseBody>(
+        {
+          error:
+            "Invalid limit parameter: limit must be a positive integer between 1 and 50",
+        },
+        { status: 400 }
+      );
+    }
+
+    const offset = (pageNumber - 1) * limit;
+    const data: Advocate[] = await db
       .select()
       .from(advocates)
       .limit(limit)
       .offset(offset);
 
-    return NextResponse.json({ data: advocatesData }, { status: 200 });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    if (!data || data.length === 0) {
+      return NextResponse.json<ErrorResponseBody>(
+        { error: "No advocates found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json<AdvocateServerResponse>(
+      { data, pageNumber, limit },
+      { status: 200 }
+    );
+  } catch (error: unknown) {
+    /** handle if error is not guaranteed to have message property, edge case */
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json<ErrorResponseBody>(
+      { error: errorMessage },
+      { status: 500 }
+    );
   }
 }
