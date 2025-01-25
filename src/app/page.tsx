@@ -37,7 +37,12 @@ export default function Home() {
    * - eventually we will have pagination to prepare for large data (scaling)
    */
   useEffect(() => {
-    /** fetch advocates */
+    /**
+     * Fetches advocates from the backend API
+     *
+     * @param {void} No arguments
+     * @returns {Promise<void>} Resolves when the fetch is complete, rejects on error
+     */
     const fetchAdvocates = async (): Promise<void> => {
       setLoading(true);
       setError(null);
@@ -57,19 +62,16 @@ export default function Home() {
     fetchAdvocates();
   }, []);
 
-  /** TODO:
-   *  x get rid of the direct DOM manipulations and use react state instead
-   *  x create a better name for this function -> handleSearch
-   *  x handle filtering with better UX
-   *  x handle errors
-   *  - make sure it's debounced for better UX
-   *  - move filtering to the backend for performance?
+  /**
+   * Handles changes to the search input field
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The input change event
    */
-  const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const searchTerm: string = e.target.value.toLowerCase(); // normalize this
+  const handleSearchInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    const searchTerm = e.target.value.toLowerCase();
 
-    /** filtering code */
-    const filteredAdvocates: Advocate[] = advocates.filter((advocate) => {
+    const filteredAdvocates = advocates.filter((advocate) => {
       return (
         advocate.firstName.toLowerCase().includes(searchTerm) ||
         advocate.lastName.toLowerCase().includes(searchTerm) ||
@@ -81,12 +83,40 @@ export default function Home() {
       );
     });
 
-    /** set advocate states */
     setSearchTerm(searchTerm);
     setFilteredAdvocates(filteredAdvocates);
   };
 
-  /** TODO: use tailwindcss to add a more modern design */
+  /** strings are in order */
+  const headersMap = {
+    firstName: "First Name",
+    lastName: "Last Name",
+    city: "City",
+    degree: "Degree",
+    specialties: "Specialties",
+    yearsOfExperience: "Experience",
+    phoneNumber: "Phone",
+  };
+
+  const tableHeaderCell = (header: string) => (
+    <th key={header} className="border border-gray-300 px-4 py-2">
+      {header}
+    </th>
+  );
+
+  const tableDataCell = (advocate: Advocate, key: string) => {
+    const cellValue = advocate[key as keyof Advocate];
+    return (
+      <td key={advocate.id} className="border border-gray-300 px-4 py-2">
+        {Array.isArray(cellValue) ? cellValue.join(", ") : cellValue}
+      </td>
+    );
+  };
+
+  /** TODO:
+   * - use tailwindcss to add a more modern design
+   * - create new components for each section
+   */
   return (
     <div className="max-w-7xl mx-auto p-2">
       {/* TITLE SECTION */}
@@ -107,7 +137,7 @@ export default function Home() {
           className="w-full px-4 py-2 border border-gray-300 rounded-3xl focus:outline-none focus:ring-2 focus:ring-teal-500"
           placeholder="Search by name, city, or specialty..."
           value={searchTerm}
-          onChange={handleSearchInput}
+          onChange={handleSearchInputChange}
         />
       </div>
 
@@ -123,31 +153,19 @@ export default function Home() {
       )}
 
       {/* ADVOCATES TABLE (will be own component) */}
-      <table>
-        <thead>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>City</th>
-          <th>Degree</th>
-          <th>Specialties</th>
-          <th>Years of Experience</th>
-          <th>Phone Number</th>
+      <table className="w-full table-auto border-collapse border border-gray-400 shadow-sm">
+        <thead className="bg-gray-100 text-gray-700">
+          {Object.values(headersMap).map((header) => {
+            return tableHeaderCell(header);
+          })}
         </thead>
         <tbody>
           {filteredAdvocates.map((advocate) => {
             return (
               <tr>
-                <td>{advocate.firstName}</td>
-                <td>{advocate.lastName}</td>
-                <td>{advocate.city}</td>
-                <td>{advocate.degree}</td>
-                <td>
-                  {advocate.specialties.map((s) => (
-                    <div>{s}</div>
-                  ))}
-                </td>
-                <td>{advocate.yearsOfExperience}</td>
-                <td>{advocate.phoneNumber}</td>
+                {Object.keys(headersMap).map((headerKey) =>
+                  tableDataCell(advocate, headerKey)
+                )}
               </tr>
             );
           })}
