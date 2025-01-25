@@ -88,7 +88,7 @@ export default function Home() {
 
   /** TODO: use tailwindcss to add a more modern design */
   return (
-    <main className="max-w-7xl bg-blue-50 mx-auto p-6">
+    <div className="max-w-7xl mx-auto p-2">
       {/* TITLE SECTION */}
       <h1 className="text-2xl font-bold mb-6">Solace Advocates</h1>
 
@@ -153,6 +153,6 @@ export default function Home() {
           })}
         </tbody>
       </table>
-    </main>
+    </div>
   );
 }

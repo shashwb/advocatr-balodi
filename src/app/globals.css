@@ -1,3 +1,97 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/**
+ * IMPROVEMENTS
+ * + setting the stage for dark mode support
+ * + focus styles for accessibility
+ * + basic typography and brand color setup, continued in tailwind config
+ */
+
+/** CSS Reset for cross browser compatibility/consistency */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Inter", monospace;
+  background-color: #f9fafb; /* default light mode background */
+  color: #111827; /** light mode text **/
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.dark body {
+  background-color: #1f2937; /* default dark mode background */
+  color: #f9fafb; /** dark mode text **/
+}
+
+/* focus styles */
+:focus-visible {
+  /* outline: 2px solid #38bdf8; */
+  outline: 2px solid #f83875;
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/** basic typography **/
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+  color: #111827;
+  /* color: #9e1d53; */
+}
+
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6 {
+  color: #f9fafb;
+}
+
+p {
+  color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+a:hover {
+  color: #2563eb; /* Tailwind blue-600 */
+  text-decoration: underline;
+}
+
+/* Button Styles */
+button {
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+}
+
+button:focus-visible {
+  outline: 2px solid #22c55e; /* Tailwind green-500 */
+  outline-offset: 2px;
+}
+
+/* Utility Classes */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
