@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 
+/** components */
+import AdvocateCard from "@/components/AdvocateCard";
+
 /**
  * IMPROVEMENTS:
  *  + ensure strong typing using TS
@@ -184,6 +187,11 @@ export default function Home(): JSX.Element {
           })}
         </tbody>
       </table>
+
+      {/* advocate card example */}
+      <div>
+        <AdvocateCard />
+      </div>
     </div>
   );
 }
