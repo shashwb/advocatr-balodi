@@ -1,7 +1,7 @@
 import { render, fireEvent, waitFor, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Home from "./page";
-import { act } from "react-dom/test-utils";
+import { act } from "react";
 
 // Mock fetch globally
 global.fetch = jest.fn(() =>
