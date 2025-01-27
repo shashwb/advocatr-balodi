@@ -7,41 +7,39 @@ import DarkModeToggle from "./DarkModeToggle";
 /** css */
 import "@/styles/navbar.css";
 
-const Navbar = () => {
-  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+/**
+ * A functional component that renders a simple Navbra element.
+ *
+ * @returns A JSX.Element representing the navbar element.
+ */
+const Navbar = (): JSX.Element => {
+  const [isDarkTheme, setIsDarkTheme] = useState<boolean>(false);
 
-  //   initialize dark mode based on user's preferences or localStorage
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    // which browsers would this work on?
+    const savedTheme = localStorage.getItem("theme") as "dark" | "light" | null;
     const prefersDark = window.matchMedia(
       "(prefers-color-scheme: dark)"
     ).matches;
 
-    const initialMode = savedTheme ? savedTheme === "dark" : prefersDark;
-    setIsDarkMode(initialMode);
-    // we make a direct DOM manipulation...is there another way?
-    document.documentElement.classList.toggle("dark", initialMode);
+    const initialTheme = savedTheme ? savedTheme === "dark" : prefersDark;
+    setIsDarkTheme(initialTheme);
+    document.documentElement.classList.toggle("dark", initialTheme);
   }, []);
 
-  const toggleDarkMode = () => {
-    const newMode = !isDarkMode;
-    setIsDarkMode(newMode);
-    localStorage.setItem("theme", newMode ? "dark" : "light");
-    document.documentElement.classList.toggle("dark", newMode);
+  const toggleDarkTheme = (): void => {
+    const newTheme = !isDarkTheme;
+    setIsDarkTheme(newTheme);
+    localStorage.setItem("theme", newTheme ? "dark" : "light");
+    document.documentElement.classList.toggle("dark", newTheme);
   };
 
   return (
-    <>
-      <header className="p-4 shadow bg-white">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          {/* The app title on the left */}
-          <h1 className="logo text-2xl font-bold">Advocatr</h1>
-          {/* The toggle dark mode button on the right */}
-          <DarkModeToggle handleToggle={toggleDarkMode} />
-        </div>
-      </header>
-    </>
+    <header className="py-4 shadow bg-white">
+      <div className="max-w-7xl mx-auto flex justify-between items-center">
+        <h1 className="logo text-2xl font-bold">Advocatr</h1>
+        <DarkModeToggle handleToggle={toggleDarkTheme} />
+      </div>
+    </header>
   );
 };
 
