@@ -1,6 +1,5 @@
-import { GET, AdvocateServerResponse, ErrorResponseBody } from "./route"; // GET handlers
+import { GET } from "./route"; // GET handlers
 import db from "../../../db"; // db module
-import { PgSelectBase } from "drizzle-orm/pg-core"; // import types from drizzle-orm
 import { NextResponse } from "next/server"; // import NextResponse from next/server
 
 /** goals:
@@ -9,34 +8,21 @@ import { NextResponse } from "next/server"; // import NextResponse from next/ser
  * -> validate responses
  */
 
-/** MAIN MOCK OBJECT */
 jest.mock("../../../db", () => ({
-  select: jest.fn(() => {
-    return {
-      from: jest.fn(() => {
-        return {
-          limit: jest.fn(() => {
-            return {
-              offset: jest.fn().mockResolvedValueOnce([
-                {
-                  id: 1,
-                  firstName: "John",
-                  lastName: "Doe",
-                  city: "New York",
-                  degree: "MD",
-                  specialties: ["Cardiology"],
-                  yearsOfExperience: 10,
-                  phoneNumber: "1234567890",
-                  createdAt: new Date(),
-                },
-              ]),
-            };
-          }),
-        };
-      }),
-    };
-  }),
+  select: jest.fn(),
 }));
+
+const mockDbResponse = (returnValue: any, shouldError: boolean = false) => {
+  const mockChain = {
+    from: jest.fn().mockReturnThis(),
+    limit: jest.fn().mockReturnThis(),
+    offset: shouldError
+      ? jest.fn().mockRejectedValue(new Error("Database error"))
+      : jest.fn().mockResolvedValue(returnValue),
+  };
+
+  (db.select as jest.Mock).mockReturnValue(mockChain);
+};
 
 describe("GET /api/advocates", () => {
   beforeEach(() => {
@@ -45,6 +31,20 @@ describe("GET /api/advocates", () => {
 
   /** SUCCESS */
   test("returns paginated advocates", async () => {
+    mockDbResponse([
+      {
+        id: 1,
+        firstName: "John",
+        lastName: "Doe",
+        city: "New York",
+        degree: "MD",
+        specialties: ["Cardiology"],
+        yearsOfExperience: 10,
+        phoneNumber: "1234567890",
+        createdAt: new Date(),
+      },
+    ]);
+
     const request: Request = new Request(
       "http://localhost/api/advocates?page=1&limit=5"
     );
@@ -59,6 +59,19 @@ describe("GET /api/advocates", () => {
 
   /** FAILURE */
   test("handles invalid 'page' request param (> 0) for pagination", async () => {
+    mockDbResponse([
+      {
+        id: 1,
+        firstName: "John",
+        lastName: "Doe",
+        city: "New York",
+        degree: "MD",
+        specialties: ["Cardiology"],
+        yearsOfExperience: 10,
+        phoneNumber: "1234567890",
+        createdAt: new Date(),
+      },
+    ]);
     const request: Request = new Request(
       "http://localhost/api/advocates?page=0"
     );
@@ -73,6 +86,19 @@ describe("GET /api/advocates", () => {
   });
 
   test("handles invalid limit (< 50) for pagination", async () => {
+    mockDbResponse([
+      {
+        id: 1,
+        firstName: "John",
+        lastName: "Doe",
+        city: "New York",
+        degree: "MD",
+        specialties: ["Cardiology"],
+        yearsOfExperience: 10,
+        phoneNumber: "1234567890",
+        createdAt: new Date(),
+      },
+    ]);
     const request: Request = new Request(
       "http://localhost/api/advocates?limit=51"
     );
@@ -87,16 +113,7 @@ describe("GET /api/advocates", () => {
   });
 
   test("returns 404 when no advocates are found", async () => {
-    /** we need to mock the entire db call that we expect.... */
-
-    (db.select as jest.Mock).mockReturnValueOnce({
-      from: jest.fn().mockReturnValueOnce({
-        limit: jest.fn().mockReturnValueOnce({
-          offset: jest.fn().mockResolvedValueOnce([]), // return an empty array here
-        }),
-      }),
-    });
-
+    mockDbResponse([]);
     const request = new Request(
       "http://localhost/api/advocates?page=1&limit=10"
     );
@@ -109,14 +126,7 @@ describe("GET /api/advocates", () => {
 
   /** INTERNAL SERVER ERROR */
   test("handles internal server errors", async () => {
-    /** mock a db error */
-    (db.select as jest.Mock).mockReturnValueOnce({
-      from: jest.fn().mockReturnValueOnce({
-        limit: jest.fn().mockReturnValueOnce({
-          offset: jest.fn().mockResolvedValueOnce(new Error("database error!")), // return an empty array here
-        }),
-      }),
-    });
+    mockDbResponse(null, true);
 
     const request = new Request(
       "http://localhost/api/advocates?page=1&limit=10"
@@ -125,6 +135,8 @@ describe("GET /api/advocates", () => {
     const jsonResponse = await response.json();
 
     expect(response.status).toBe(500);
-    expect(jsonResponse.error).toBe("Internal Server Error");
+    expect(jsonResponse.error).toBe(
+      "The API suffered a server-side error, please contact support"
+    );
   });
 });
