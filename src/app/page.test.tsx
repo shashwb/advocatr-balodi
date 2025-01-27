@@ -14,7 +14,39 @@ global.fetch = jest.fn(() =>
 ) as jest.Mock;
 
 describe("Home component", () => {
-  it("fetches and displays advocates", async () => {
+  it("fetches and displays advocates (promise result)", async () => {
+    const mockAdvocate = {
+      id: 1,
+      firstName: "John",
+      lastName: "Doe",
+      city: "New York",
+      degree: "MD",
+      specialties: ["Cardiology"],
+      yearsOfExperience: 10,
+      phoneNumber: "1234567890",
+    };
+
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: async () => ({ data: [mockAdvocate] }),
+      })
+    ) as jest.Mock;
+
+    let component: ReturnType<typeof render> | undefined;
+    await act(async () => {
+      component = render(<Home />);
+    });
+
+    if (!component) {
+      throw new Error("Component was not rendered correctly");
+    }
+
+    expect(component.getByText("John")).toBeInTheDocument();
+    expect(component.getByText("Doe")).toBeInTheDocument();
+  });
+
+  it("initial useEffect hydration of advocates", async () => {
     await act(async () => {
       render(<Home />);
     });
