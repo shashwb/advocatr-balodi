@@ -1,14 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/**
- * IMPROVEMENTS
- * + setting the stage for dark mode support
- * + focus styles for accessibility
- * + basic typography and brand color setup, continued in tailwind config
- */
-
 /** CSS Reset for cross browser compatibility/consistency */
 *,
 *::before,
@@ -64,8 +53,7 @@ h6 {
 .dark h4,
 .dark h5,
 .dark h6 {
-  /* color: #f9fafb; */
-  color: #22c55e;
+  color: #f9fafb;
 }
 
 .logo {
@@ -104,46 +92,4 @@ button:focus-visible {
   max-width: 1200px;
   margin: 0 auto;
   padding: 1rem;
-}
-
-/* super cool toggle I found :)  */
-.dark-mode-toggle {
-  color: red;
-  background-color: red;
-  /* background-color: #fff; */
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-  box-shadow: 0 0 50px 20px rgba(0, 0, 0, 0.1);
-  line-height: 1;
-}
-
-.dark-mode-input {
-  display: none;
-}
-
-.dark-mode-icon {
-  grid-column: 1 / 1;
-  grid-row: 1 / 1;
-  transition: transform 500ms;
-}
-
-.dark-mode-icon--moon {
-  transition-delay: 200ms;
-}
-
-.dark-mode-icon--sun {
-  transform: scale(0);
-}
-
-#switch:checked + .dark-mode-icon--moon {
-  transform: rotate(360deg) scale(0);
-}
-
-#switch:checked ~ .dark-mode-icon--sun {
-  transition-delay: 200ms;
-  transform: scale(1) rotate(360deg);
 }
