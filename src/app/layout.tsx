@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
+/** components */
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+
 const inter = Inter({ subsets: ["latin"] });
 
 /**
@@ -30,28 +34,11 @@ export default function RootLayout({
 }): JSX.Element {
   const content = (
     <>
-      {/* The header contains the app title and a button to toggle dark mode */}
-      <header className="p-4 shadow bg-white">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          {/* The app title on the left */}
-          <h1 className="text-2xl font-bold">Advocatr</h1>
-          {/* The toggle dark mode button on the right */}
-          <button
-            id="toggleDarkMode"
-            className="p-2 bg-teal-600 text-white rounded-md cursor-pointer hover:bg-teal-700"
-          >
-            Toggle Dark Mode
-          </button>
-        </div>
-      </header>
-      {/* The main app content is contained within this element */}
+      <Navbar />
       <main id="appContainer" className="max-w-7xl mx-auto p-6 rounded-3xl">
         {children}
       </main>
-      {/* The footer contains the copyright information */}
-      <footer className="p-4 bg-gray-100 text-center text-sm">
-        <p>&copy; {new Date().getFullYear()} Seth Balodi - Advocatr</p>
-      </footer>
+      <Footer />
     </>
   );
 

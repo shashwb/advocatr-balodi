@@ -1,14 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/**
- * IMPROVEMENTS
- * + setting the stage for dark mode support
- * + focus styles for accessibility
- * + basic typography and brand color setup, continued in tailwind config
- */
-
 /** CSS Reset for cross browser compatibility/consistency */
 *,
 *::before,
@@ -64,8 +53,7 @@ h6 {
 .dark h4,
 .dark h5,
 .dark h6 {
-  /* color: #f9fafb; */
-  color: #22c55e;
+  color: #f9fafb;
 }
 
 .logo {

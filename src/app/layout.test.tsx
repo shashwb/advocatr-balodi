@@ -1,6 +1,9 @@
-import { render, fireEvent, waitFor, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import RootLayout from "./layout";
+
+jest.mock("@/components/Navbar", () => () => <div>Mock Navbar</div>);
+jest.mock("@/components/Footer", () => () => <div>Mock Footer</div>);
 
 describe("RootLayout Component", () => {
   test("renders header, main, and footer", () => {
@@ -10,26 +13,8 @@ describe("RootLayout Component", () => {
       </RootLayout>
     );
 
-    expect(screen.getByText("Advocatr")).toBeInTheDocument();
-    // regex for flexibility
-    expect(screen.getByText(/Seth Balodi - Advocatr/)).toBeInTheDocument();
-    expect(screen.getByText(/©/)).toBeInTheDocument();
+    expect(screen.getByText("Mock Navbar")).toBeInTheDocument();
+    expect(screen.getByText("Mock Footer")).toBeInTheDocument();
+    expect(screen.getByText("Test Content")).toBeInTheDocument();
   });
-
-  /** this will fail for now until implemented! */
-  //   test("toggles dark mode on button click", () => {
-  //     render(
-  //       <RootLayout>
-  //         <div>Test Content</div>
-  //       </RootLayout>
-  //     );
-
-  //     const toggleButton = screen.getByText("Toggle Dark Mode");
-  //     fireEvent.click(toggleButton);
-
-  //     expect(document.documentElement.classList.contains("dark")).toBe(true);
-
-  //     fireEvent.click(toggleButton);
-  //     expect(document.documentElement.classList.contains("dark")).toBe(false);
-  //   });
 });
