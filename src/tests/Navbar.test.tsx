@@ -2,6 +2,21 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Navbar from "@/components/Navbar";
 
+// Mock window.matchMedia
+Object.defineProperty(window, "matchMedia", {
+  writable: true,
+  value: jest.fn().mockImplementation((query) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(), // deprecated
+    removeListener: jest.fn(), // deprecated
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
+
 describe("Navbar Component", () => {
   beforeEach(() => {
     localStorage.clear();
@@ -16,7 +31,7 @@ describe("Navbar Component", () => {
 
   test("toggles dark mode on button click", () => {
     render(<Navbar />);
-    const toggleButton = screen.getByText("Toggle Dark Mode");
+    const toggleButton = screen.getByLabelText("Toggle Dark Mode");
 
     fireEvent.click(toggleButton);
     expect(document.documentElement.classList.contains("dark")).toBe(true);

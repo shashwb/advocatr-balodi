@@ -134,14 +134,11 @@ export default function Home(): JSX.Element {
   return (
     <div className="max-w-7xl mx-auto p-2">
       {/* TITLE SECTION */}
-      <h1 className="text-2xl font-bold mb-6">Solace Advocates</h1>
+      <h1 className="text-2xl font-bold mb-6">Solace Advocates Finder</h1>
 
       {/* SEARCH SECTION */}
       <div className="mb-10">
-        <label
-          htmlFor="searchbar"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="searchbar" className="block text-md font-medium p-2">
           Search Advocates
         </label>
         <input

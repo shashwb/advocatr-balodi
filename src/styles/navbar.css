@@ -26,11 +26,13 @@
 }
 
 .icon--moon {
+  color: black;
   transition-delay: 200ms;
 }
 
 .icon--sun {
-  color: black;
+  color: rgb(255, 166, 0);
+  /* color: rgba(0, 0, 0, 0.2); */
   transform: scale(0);
 }
 
