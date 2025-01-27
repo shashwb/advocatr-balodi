@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "test": "jest",
     "lint": "next lint",
     "generate": "drizzle-kit generate",
     "migrate:up": "node ./src/db/migrate.js",
@@ -33,6 +34,7 @@
     "postcss": "^8.4.40",
     "supertest": "^7.0.0",
     "tailwindcss": "^3.4.7",
+    "ts-jest": "^29.2.5",
     "typescript": "^5.5.4"
   }
 }

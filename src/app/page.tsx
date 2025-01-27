@@ -49,8 +49,11 @@ export default function Home() {
       /** try / catch */
       try {
         const response = await fetch("/api/advocates");
+        // const response = await fetch("/api/advocates?page=1&limit=5");
+
         if (!response.ok) throw new Error("Failed to fetch advocates");
         const advocates: AdvocateAPIResponse = await response.json();
+
         setAdvocates(advocates.data);
         setFilteredAdvocates(advocates.data);
       } catch (err: any) {

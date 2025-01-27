@@ -10,13 +10,13 @@ import { NextResponse } from "next/server";
  * + add pagination
  */
 
-interface AdvocateServerResponse {
+export interface AdvocateServerResponse {
   data: Advocate[];
   pageNumber: number;
   limit: number;
 }
 
-interface ErrorResponseBody {
+export interface ErrorResponseBody {
   error: string;
 }
 
@@ -56,18 +56,27 @@ export async function GET(
     }
 
     const offset = (pageNumber - 1) * limit;
-    const data: Advocate[] = await db
+    const dbResponse = await db
       .select()
       .from(advocates)
       .limit(limit)
       .offset(offset);
 
-    if (!data || data.length === 0) {
+    if (!dbResponse || dbResponse.length === 0) {
       return NextResponse.json<ErrorResponseBody>(
         { error: "No advocates found" },
         { status: 404 }
       );
     }
+
+    const data: Advocate[] = dbResponse.map((record) => {
+      return {
+        ...record,
+        specialties: Array.isArray(record.specialties)
+          ? record.specialties
+          : [],
+      };
+    });
 
     return NextResponse.json<AdvocateServerResponse>(
       { data, pageNumber, limit },
@@ -77,8 +86,9 @@ export async function GET(
     /** handle if error is not guaranteed to have message property, edge case */
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
+    /** send this error message to some sort of monitoring (AWS Cloudwatch, sentry, etc.) */
     return NextResponse.json<ErrorResponseBody>(
-      { error: errorMessage },
+      { error: "Internal Server Error" },
       { status: 500 }
     );
   }
