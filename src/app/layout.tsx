@@ -18,42 +18,54 @@ export const metadata: Metadata = {
 
 /**
  * The main app layout component.
- * @param {React.PropsWithChildren<{}>} props - The component props.
+ * @param {{ children: React.ReactNode; testMode?: boolean }} props - The component props.
  * @returns {JSX.Element} The JSX element for the app layout.
  */
 export default function RootLayout({
   children,
-}: React.PropsWithChildren<{}>): JSX.Element {
+  testMode = false,
+}: {
+  children: React.ReactNode;
+  testMode?: boolean;
+}): JSX.Element {
+  const content = (
+    <>
+      {/* The header contains the app title and a button to toggle dark mode */}
+      <header className="p-4 shadow bg-white">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          {/* The app title on the left */}
+          <h1 className="text-2xl font-bold">Advocatr</h1>
+          {/* The toggle dark mode button on the right */}
+          <button
+            id="toggleDarkMode"
+            className="p-2 bg-teal-600 text-white rounded-md cursor-pointer hover:bg-teal-700"
+          >
+            Toggle Dark Mode
+          </button>
+        </div>
+      </header>
+      {/* The main app content is contained within this element */}
+      <main id="appContainer" className="max-w-7xl mx-auto p-6 rounded-3xl">
+        {children}
+      </main>
+      {/* The footer contains the copyright information */}
+      <footer className="p-4 bg-gray-100 text-center text-sm">
+        <p>&copy; {new Date().getFullYear()} Seth Balodi - Advocatr</p>
+      </footer>
+    </>
+  );
+
+  if (testMode) {
+    return (
+      <div lang="en" className={inter.className}>
+        <div className="bg-gray-300 text-gray-800">{content}</div>
+      </div>
+    );
+  }
+
   return (
     <html lang="en" className={inter.className}>
-      <body className="bg-gray-300 text-gray-800">
-        {/* The header contains the app title and a button to toggle dark mode */}
-        <header className="p-4 shadow bg-white">
-          <div className="max-w-7xl mx-auto flex justify-between items-center">
-            {/* The app title on the left */}
-            <div>
-              <h1 className="text-2xl font-bold">Advocatr</h1>
-            </div>
-            {/* The toggle dark mode button on the right */}
-            <div>
-              <button
-                id="toggleDarkMode"
-                className="p-2 bg-teal-600 text-white rounded-md cursor-pointer hover:bg-teal-700"
-              >
-                Toggle Dark Mode
-              </button>
-            </div>
-          </div>
-        </header>
-        {/* The main app content is contained within this element */}
-        <main id="appContainer" className="max-w-7xl mx-auto p-6 rounded-3xl">
-          {children}
-        </main>
-        {/* The footer contains the copyright information */}
-        <footer className="p-4 bg-gray-100 text-center text-sm">
-          <p>&copy; {new Date().getFullYear()} Seth Balodi - Advocatr</p>
-        </footer>
-      </body>
+      <body className="bg-gray-300 text-gray-800">{content}</body>
     </html>
   );
 }

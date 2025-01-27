@@ -10,12 +10,12 @@ import { NextResponse } from "next/server";
  * + implemented idempotency for seeding logic for development
  */
 
-interface SeedResponse {
+export interface SeedResponse {
   message: string;
   inserted?: Advocate[];
 }
 
-interface ErrorResponseBody {
+export interface ErrorResponseBody {
   error: string;
 }
 

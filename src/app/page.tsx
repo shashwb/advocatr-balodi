@@ -26,7 +26,7 @@ interface AdvocateAPIResponse {
   data: Advocate[];
 }
 
-export default function Home() {
+export default function Home(): JSX.Element {
   /** advocate states (initially empty, will gracefully degrade if fetch fails) */
   const [advocates, setAdvocates] = useState<Advocate[]>([]);
   const [filteredAdvocates, setFilteredAdvocates] = useState<Advocate[]>([]);
@@ -40,7 +40,6 @@ export default function Home() {
     /**
      * Fetches advocates from the backend API
      *
-     * @param {void} No arguments
      * @returns {Promise<void>} Resolves when the fetch is complete, rejects on error
      */
     const fetchAdvocates = async (): Promise<void> => {
@@ -49,8 +48,11 @@ export default function Home() {
       /** try / catch */
       try {
         const response = await fetch("/api/advocates");
+        // const response = await fetch("/api/advocates?page=1&limit=5");
+
         if (!response.ok) throw new Error("Failed to fetch advocates");
         const advocates: AdvocateAPIResponse = await response.json();
+
         setAdvocates(advocates.data);
         setFilteredAdvocates(advocates.data);
       } catch (err: any) {
@@ -88,7 +90,7 @@ export default function Home() {
   };
 
   /** as long as keys are strings, we ensure order */
-  const headersMap = {
+  const headersMap: Record<string, string> = {
     firstName: "First Name",
     lastName: "Last Name",
     city: "City",
@@ -120,7 +122,10 @@ export default function Home() {
   ): JSX.Element => {
     const cellValue = advocate[key];
     return (
-      <td key={advocate.id} className="border border-gray-300 px-4 py-2">
+      <td
+        key={`${advocate.id}-${key}`}
+        className="border border-gray-300 px-4 py-2"
+      >
         {Array.isArray(cellValue) ? cellValue.join(", ") : cellValue}
       </td>
     );
@@ -155,23 +160,25 @@ export default function Home() {
       {error && (
         <div className="bg-red-100 rounded-xl p-3 m-8">
           <p className="text-red-500 text-md font-bold">
-            TODO: Replace this with an error handling class and graceful
-            degredation: {error}
+            Replace this with an error handling class and graceful degredation
           </p>
+          <p>{error}</p>
         </div>
       )}
 
       {/* ADVOCATES TABLE (will be own component) */}
       <table className="w-full table-auto border-collapse border border-gray-400 shadow-sm">
         <thead className="bg-gray-100 text-gray-700">
-          {Object.values(headersMap).map((header) => {
-            return tableHeaderCell(header);
-          })}
+          <tr>
+            {Object.values(headersMap).map((header) => {
+              return tableHeaderCell(header);
+            })}
+          </tr>
         </thead>
         <tbody>
           {filteredAdvocates.map((advocate) => {
             return (
-              <tr>
+              <tr key={advocate.id}>
                 {Object.keys(headersMap).map((headerKey) =>
                   tableDataCell(advocate, headerKey as keyof Advocate)
                 )}

@@ -14,7 +14,7 @@ import {
  * + Add Advocate interface in schmema, easy to reuse throughout app
  * + If schema changes, we only need to update Advocate here
  */
-export interface Advocate {
+interface Advocate {
   id: number;
   firstName: string;
   lastName: string;
@@ -37,4 +37,5 @@ const advocates = pgTable("advocates", {
   createdAt: timestamp("created_at").default(sql`CURRENT_TIMESTAMP`),
 });
 
-export { advocates, Advocate };
+export { advocates };
+export type { Advocate };

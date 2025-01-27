@@ -10,14 +10,15 @@ import { NextResponse } from "next/server";
  * + add pagination
  */
 
-interface AdvocateServerResponse {
+export interface AdvocateServerResponse {
   data: Advocate[];
-  pageNumber: number;
+  page: number;
   limit: number;
 }
 
-interface ErrorResponseBody {
+export interface ErrorResponseBody {
   error: string;
+  message?: string;
 }
 
 /**
@@ -33,12 +34,13 @@ export async function GET(
   const MAX_LIMIT = 50;
   try {
     const url = new URL(request.url);
-    const pageParam = url.searchParams.get("page");
-    const limitParam = url.searchParams.get("limit");
-    const pageNumber = parseInt(pageParam || "1", 10);
-    const limit = parseInt(limitParam || "10", 10);
+    const pageParam: string | null = url.searchParams.get("page");
+    const limitParam: string | null = url.searchParams.get("limit");
 
-    if (isNaN(pageNumber) || pageNumber < 1) {
+    const page = pageParam ? parseInt(pageParam) : 1;
+    const limit = limitParam ? parseInt(limitParam) : 10;
+
+    if (isNaN(page) || page < 1) {
       return NextResponse.json<ErrorResponseBody>(
         { error: "Invalid page parameter: page must be a positive integer" },
         { status: 400 }
@@ -55,30 +57,43 @@ export async function GET(
       );
     }
 
-    const offset = (pageNumber - 1) * limit;
-    const data: Advocate[] = await db
+    const offset = (page - 1) * limit;
+    const advocatesDbResponse = await db
       .select()
       .from(advocates)
       .limit(limit)
       .offset(offset);
 
-    if (!data || data.length === 0) {
+    if (advocatesDbResponse.length === 0) {
       return NextResponse.json<ErrorResponseBody>(
         { error: "No advocates found" },
         { status: 404 }
       );
     }
 
+    const data: Advocate[] = advocatesDbResponse.map((record) => {
+      return {
+        ...record,
+        specialties: Array.isArray(record.specialties)
+          ? record.specialties
+          : [],
+      };
+    });
+
     return NextResponse.json<AdvocateServerResponse>(
-      { data, pageNumber, limit },
+      { data, page, limit },
       { status: 200 }
     );
   } catch (error: unknown) {
     /** handle if error is not guaranteed to have message property, edge case */
     const errorMessage =
       error instanceof Error ? error.message : "Unknown error";
+    /** send this error message to some sort of monitoring (AWS Cloudwatch, sentry, etc.) */
     return NextResponse.json<ErrorResponseBody>(
-      { error: errorMessage },
+      {
+        error: "The API suffered a server-side error, please contact support",
+        message: errorMessage,
+      },
       { status: 500 }
     );
   }

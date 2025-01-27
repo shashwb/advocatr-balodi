@@ -6,7 +6,11 @@ const setup = () => {
     console.error("DATABASE_URL is not set");
     return {
       select: () => ({
-        from: () => [],
+        from: () => ({
+          limit: () => ({
+            offset: () => Promise.resolve([]),
+          }),
+        }),
       }),
     };
   }
