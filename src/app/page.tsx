@@ -26,7 +26,7 @@ interface AdvocateAPIResponse {
   data: Advocate[];
 }
 
-export default function Home() {
+export default function Home(): JSX.Element {
   /** advocate states (initially empty, will gracefully degrade if fetch fails) */
   const [advocates, setAdvocates] = useState<Advocate[]>([]);
   const [filteredAdvocates, setFilteredAdvocates] = useState<Advocate[]>([]);
@@ -40,7 +40,6 @@ export default function Home() {
     /**
      * Fetches advocates from the backend API
      *
-     * @param {void} No arguments
      * @returns {Promise<void>} Resolves when the fetch is complete, rejects on error
      */
     const fetchAdvocates = async (): Promise<void> => {
@@ -91,7 +90,7 @@ export default function Home() {
   };
 
   /** as long as keys are strings, we ensure order */
-  const headersMap = {
+  const headersMap: Record<string, string> = {
     firstName: "First Name",
     lastName: "Last Name",
     city: "City",

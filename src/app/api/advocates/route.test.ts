@@ -1,6 +1,5 @@
 import { GET } from "./route"; // GET handlers
 import db from "../../../db"; // db module
-import { NextResponse } from "next/server"; // import NextResponse from next/server
 
 /** goals:
  * -> ensure features work (pagination)
@@ -11,35 +10,6 @@ import { NextResponse } from "next/server"; // import NextResponse from next/ser
 jest.mock("../../../db", () => ({
   select: jest.fn(),
 }));
-
-/** MAIN MOCK OBJECT */
-// jest.mock("../../../db", () => ({
-//   select: jest.fn(() => {
-//     return {
-//       from: jest.fn(() => {
-//         return {
-//           limit: jest.fn(() => {
-//             return {
-//               offset: jest.fn().mockResolvedValueOnce([
-//                 {
-//                   id: 1,
-//                   firstName: "John",
-//                   lastName: "Doe",
-//                   city: "New York",
-//                   degree: "MD",
-//                   specialties: ["Cardiology"],
-//                   yearsOfExperience: 10,
-//                   phoneNumber: "1234567890",
-//                   createdAt: new Date(),
-//                 },
-//               ]),
-//             };
-//           }),
-//         };
-//       }),
-//     };
-//   }),
-// }));
 
 const mockDbResponse = (returnValue: any, shouldError: boolean = false) => {
   const mockChain = {

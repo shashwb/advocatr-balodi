@@ -18,31 +18,30 @@ export const metadata: Metadata = {
 
 /**
  * The main app layout component.
- * @param {React.PropsWithChildren<{}>} props - The component props.
+ * @param {{ children: React.ReactNode; testMode?: boolean }} props - The component props.
  * @returns {JSX.Element} The JSX element for the app layout.
  */
 export default function RootLayout({
   children,
   testMode = false,
-}: React.PropsWithChildren<{ testMode?: boolean }>): JSX.Element {
+}: {
+  children: React.ReactNode;
+  testMode?: boolean;
+}): JSX.Element {
   const content = (
     <>
       {/* The header contains the app title and a button to toggle dark mode */}
       <header className="p-4 shadow bg-white">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           {/* The app title on the left */}
-          <div>
-            <h1 className="text-2xl font-bold">Advocatr</h1>
-          </div>
+          <h1 className="text-2xl font-bold">Advocatr</h1>
           {/* The toggle dark mode button on the right */}
-          <div>
-            <button
-              id="toggleDarkMode"
-              className="p-2 bg-teal-600 text-white rounded-md cursor-pointer hover:bg-teal-700"
-            >
-              Toggle Dark Mode
-            </button>
-          </div>
+          <button
+            id="toggleDarkMode"
+            className="p-2 bg-teal-600 text-white rounded-md cursor-pointer hover:bg-teal-700"
+          >
+            Toggle Dark Mode
+          </button>
         </div>
       </header>
       {/* The main app content is contained within this element */}
