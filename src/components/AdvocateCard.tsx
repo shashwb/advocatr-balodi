@@ -26,11 +26,8 @@ export default function AdvocateCard({
             </div>
             <div className="ml-4">
               <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">
-                {name}
+                {name}, {degree}
               </h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {degree}
-              </p>
               <p className="text-sm text-gray-500 dark:text-gray-400">{city}</p>
             </div>
           </div>
