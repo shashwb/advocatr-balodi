@@ -42,8 +42,9 @@ describe("Home component", () => {
       throw new Error("Component was not rendered correctly");
     }
 
-    expect(component.getByText("John")).toBeInTheDocument();
-    expect(component.getByText("Doe")).toBeInTheDocument();
+    expect(component.getByText("John Doe")).toBeInTheDocument();
+    expect(component.getByText("New York")).toBeInTheDocument();
+    expect(component.getByText("MD")).toBeInTheDocument();
   });
 
   it("initial useEffect hydration of advocates", async () => {
@@ -52,8 +53,9 @@ describe("Home component", () => {
     });
 
     await waitFor(() => {
-      expect(screen.getByText("John")).toBeInTheDocument();
-      expect(screen.getByText("Doe")).toBeInTheDocument();
+      expect(screen.getByText("John Doe")).toBeInTheDocument();
+      expect(screen.getByText("New York")).toBeInTheDocument();
+      expect(screen.getByText("MD")).toBeInTheDocument();
     });
   });
 

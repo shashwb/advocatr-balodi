@@ -54,9 +54,13 @@ h4,
 h5,
 h6 {
   font-weight: 600;
-  color: #111827;
+  /* color: #111827; */
+  color: #115e59;
   /* color: #9e1d53; */
 }
+
+/* bg-teal-100 dark:bg-teal-700 */
+/* text-teal-800 dark:text-teal-100 */
 
 .dark h1,
 .dark h2,
@@ -65,7 +69,14 @@ h6 {
 .dark h5,
 .dark h6 {
   /* color: #f9fafb; */
-  color: #22c55e;
+  /* color: #22c55e; */
+
+  color: #ccfbf1;
+
+  /* light teal: #ccfbf1 */
+  /* bg-teal-700: #0f766e
+  text-teal-800: #115e59
+  text-teal-100: #ccfbf1 */
 }
 
 .logo {
@@ -74,7 +85,8 @@ h6 {
 }
 
 .dark .logo {
-  color: #22c55e;
+  /* color: #22c55e; */
+  color: #115e59;
 }
 
 p {

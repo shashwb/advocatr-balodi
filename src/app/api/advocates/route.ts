@@ -38,7 +38,7 @@ export async function GET(
     const limitParam: string | null = url.searchParams.get("limit");
 
     const page = pageParam ? parseInt(pageParam) : 1;
-    const limit = limitParam ? parseInt(limitParam) : 10;
+    const limit = limitParam ? parseInt(limitParam) : 9;
 
     if (isNaN(page) || page < 1) {
       return NextResponse.json<ErrorResponseBody>(
