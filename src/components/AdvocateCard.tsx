@@ -47,9 +47,9 @@ export default function AdvocateCard({
 
   return (
     <>
-      <div className="bg-white dark:bg-gray-600 hover:bg-teal-50 dark:hover:bg-teal-600 shadow-md rounded-lg p-4 cursor-pointer hover:shadow-xl transition-all duration-200 ease-in-out">
+      <div className="bg-white dark:bg-gray-600 hover:bg-teal-200 dark:hover:bg-teal-600 shadow-md rounded-lg p-4 cursor-pointer hover:shadow-xl transition-all duration-200 ease-in-out">
         <div className="flex items-center mb-1">
-          <div className="w-20 h-20 bg-gray-300 dark:bg-gray-900 rounded-full flex-shrink-0"></div>
+          <div className="w-20 h-20 bg-gray-500 dark:bg-gray-900 rounded-full flex-shrink-0"></div>
           <div className="ml-4">
             <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">
               {name || "name"}

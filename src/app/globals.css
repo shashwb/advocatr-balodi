@@ -22,9 +22,13 @@ html {
   scroll-behavior: smooth;
 }
 
+#contentBody {
+  color: #91bfbfb0;
+}
+
 body {
   font-family: "Inter", monospace;
-  background-color: #f9fafb; /* default light mode background */
+  background-color: #91bfbf34; /* default light mode background */
   color: #111827; /** light mode text **/
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
