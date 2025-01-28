@@ -1,37 +1,48 @@
+import React, { useEffect, useState } from "react";
 import AdvocateCard from "./AdvocateCard";
-
-/** type interface */
 import { Advocate } from "@/types/advocates";
 
-/** create a type interface */
 interface AdvocateListProps {
-  advocates: Advocate[];
+  searchTerm: string;
+  currentPage: number;
 }
 
-/**
- * A functional component that renders a list of AdvocateCard components.
- *
- * @param {AdvocateListProps} props - A props object with an `advocates` property.
- * @returns {JSX.Element} A JSX.Element representing the AdvocateList component.
- */
-const AdvocateList = ({ advocates }: AdvocateListProps): JSX.Element => {
-  return (
-    <>
-      <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {advocates &&
-          advocates.map((advocate) => (
-            <AdvocateCard
-              key={advocate.id}
-              name={`${advocate.firstName || "?"} ${advocate.lastName || "?"}`}
-              degree={advocate.degree}
-              specialties={advocate.specialties}
-              yearsOfExperience={advocate.yearsOfExperience}
-              city={advocate.city}
-            />
-          ))}
-      </div>
-    </>
-  );
-};
+export default function AdvocateList({
+  searchTerm,
+  currentPage,
+}: AdvocateListProps) {
+  const [advocates, setAdvocates] = useState<Advocate[]>([]);
 
-export default AdvocateList;
+  useEffect(() => {
+    const fetchAdvocates = async () => {
+      console.log("SEARCH TERM", searchTerm);
+      try {
+        const response = await fetch(
+          `/api/advocates?search=${searchTerm}&page=${currentPage}`
+        );
+        if (!response.ok) throw new Error("Failed to fetch advocates");
+        const data = await response.json();
+        setAdvocates(data.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchAdvocates();
+  }, [searchTerm, currentPage]);
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {advocates.map((advocate) => (
+        <AdvocateCard
+          key={advocate.id}
+          name={`${advocate.firstName} ${advocate.lastName}`}
+          degree={advocate.degree}
+          specialties={advocate.specialties}
+          yearsOfExperience={advocate.yearsOfExperience}
+          city={advocate.city}
+        />
+      ))}
+    </div>
+  );
+}
