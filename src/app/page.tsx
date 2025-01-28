@@ -2,8 +2,11 @@
 
 import { useEffect, useState } from "react";
 
+import { Advocate } from "@/types/advocates";
+
 /** components */
 import AdvocateCard from "@/components/AdvocateCard";
+import AdvocateList from "@/components/AdvocateList";
 
 /**
  * IMPROVEMENTS:
@@ -13,17 +16,6 @@ import AdvocateCard from "@/components/AdvocateCard";
  *  + implmeneted consistent styling using Tailwind
  *  + applicaiton is generally cleaned up and ready for new features
  */
-
-interface Advocate {
-  id: number;
-  firstName: string;
-  lastName: string;
-  city: string;
-  degree: string;
-  specialties: string[];
-  yearsOfExperience: number;
-  phoneNumber: number;
-}
 
 interface AdvocateAPIResponse {
   data: Advocate[];
@@ -188,9 +180,9 @@ export default function Home(): JSX.Element {
         </tbody>
       </table>
 
-      {/* advocate card example */}
       <div>
-        <AdvocateCard />
+        <p>Advocate List</p>
+        <AdvocateList advocates={filteredAdvocates as Advocate[]} />
       </div>
     </div>
   );
