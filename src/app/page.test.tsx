@@ -16,7 +16,7 @@ global.fetch = jest.fn(() =>
   Promise.resolve({
     ok: true,
     json: async () => ({
-      data: [{ id: 1, firstName: "John", lastName: "Doe" }],
+      data: [{ id: 1, firstName: "John", lastName: "Doe", degree: "MD" }],
     }),
   })
 ) as jest.Mock;
@@ -27,7 +27,7 @@ describe("Home component", () => {
       render(<Home />);
     });
 
-    expect(await screen.findByText("John Doe")).toBeInTheDocument();
+    expect(await screen.findByText("John Doe, MD")).toBeInTheDocument();
   });
 
   it("updates search term state when input changes", async () => {
