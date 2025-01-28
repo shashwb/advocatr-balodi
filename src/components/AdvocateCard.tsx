@@ -13,53 +13,23 @@ export default function AdvocateCard({
   yearsOfExperience,
   city,
 }: AdvocateCardProps) {
-  const mockSpecialties: string[] = [
-    "Bipolar",
-    "LGBTQ",
-    "Medication/Prescribing",
-    "Suicide History/Attempts",
-    "General Mental Health (anxiety, depression, stress, grief, life transitions)",
-    "Men's issues",
-    "Relationship Issues (family, friends, couple, etc)",
-    "Trauma & PTSD",
-    "Personality disorders",
-    "Personal growth",
-    "Substance use/abuse",
-    "Pediatrics",
-  ];
-
-  const mockSpecialties_alt = [
-    "Women's issues (post-partum, infertility, family planning)",
-    "Chronic pain",
-    "Weight loss & nutrition",
-    "Eating disorders",
-    "Diabetic Diet and nutrition",
-    "Coaching (leadership, career, academic and wellness)",
-    "Life coaching",
-    "Obsessive-compulsive disorders",
-    "Neuropsychological evaluations & testing (ADHD testing)",
-    "Attention and Hyperactivity (ADHD)",
-    "Sleep issues",
-    "Schizophrenia and psychotic disorders",
-    "Learning disorders",
-    "Domestic abuse",
-  ];
-
   return (
     <>
       <div className="bg-white dark:bg-gray-600 hover:bg-teal-200 dark:hover:bg-teal-600 shadow-md rounded-lg p-4 cursor-pointer hover:shadow-xl transition-all duration-200 ease-in-out">
-        <div className="flex items-center mb-1">
-          <div className="w-20 h-20 bg-gray-500 dark:bg-gray-900 rounded-full flex-shrink-0"></div>
-          <div className="ml-4">
-            <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">
-              {name || "name"}
-            </h2>
-            <p className="text-sm text-gray-500 dark:text-gray-300">
-              {degree || "degree"}
-            </p>
-            <p className="text-sm text-gray-500 dark:text-gray-300">
-              {city || "city"}
-            </p>
+        <div className="relative bg-gray-100 dark:bg-gray-800 shadow-md rounded-lg p-4 hover:shadow-lg transition-all duration-200 ease-in-out mb-10">
+          <div className="flex items-center mb-4 relative">
+            <div className="w-16 h-16 bg-gray-500 dark:bg-gray-700 rounded-full flex-shrink-0 relative">
+              {/* Badge */}
+              <div className="absolute bottom-0 right-0 bg-teal-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
+                {yearsOfExperience} yrs
+              </div>
+            </div>
+            <div className="ml-4">
+              <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">
+                {name}, {degree}
+              </h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{city}</p>
+            </div>
           </div>
         </div>
         <div className="mb-4">
@@ -78,9 +48,9 @@ export default function AdvocateCard({
               ))}
           </div>
         </div>
-        <p className="text-sm text-gray-600 dark:text-gray-300">
+        {/* <p className="text-sm text-gray-600 dark:text-gray-300">
           {yearsOfExperience} years of experience
-        </p>
+        </p> */}
       </div>
     </>
   );

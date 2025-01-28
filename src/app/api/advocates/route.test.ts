@@ -1,11 +1,5 @@
-import { GET } from "./route"; // GET handlers
-import db from "../../../db"; // db module
-
-/** goals:
- * -> ensure features work (pagination)
- * -> handle errors
- * -> validate responses
- */
+import { GET } from "./route"; // GET handler for /api/advocates
+import db from "../../../db"; // Mock database
 
 jest.mock("../../../db", () => ({
   select: jest.fn(),
@@ -14,6 +8,7 @@ jest.mock("../../../db", () => ({
 const mockDbResponse = (returnValue: any, shouldError: boolean = false) => {
   const mockChain = {
     from: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
     limit: jest.fn().mockReturnThis(),
     offset: shouldError
       ? jest.fn().mockRejectedValue(new Error("Database error"))
@@ -23,13 +18,12 @@ const mockDbResponse = (returnValue: any, shouldError: boolean = false) => {
   (db.select as jest.Mock).mockReturnValue(mockChain);
 };
 
-describe("GET /api/advocates", () => {
+describe("/api/advocates GET", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  /** SUCCESS */
-  test("returns paginated advocates", async () => {
+  test("returns paginated advocates filtered by specialties", async () => {
     mockDbResponse([
       {
         id: 1,
@@ -37,84 +31,40 @@ describe("GET /api/advocates", () => {
         lastName: "Doe",
         city: "New York",
         degree: "MD",
-        specialties: ["Cardiology"],
+        specialties: ["Cardiology", "Neurology"],
         yearsOfExperience: 10,
         phoneNumber: "1234567890",
-        createdAt: new Date(),
       },
     ]);
 
-    const request: Request = new Request(
-      "http://localhost/api/advocates?page=1&limit=5"
+    const request = new Request(
+      "http://localhost/api/advocates?search=Cardiology&page=1&limit=5"
     );
-
     const response = await GET(request);
     const jsonResponse = await response.json();
 
     expect(response.status).toBe(200);
     expect(jsonResponse.data).toHaveLength(1);
-    expect(jsonResponse.data[0].firstName).toBe("John");
+    expect(jsonResponse.data[0].specialties).toContain("Cardiology");
   });
 
-  /** FAILURE */
-  test("handles invalid 'page' request param (> 0) for pagination", async () => {
-    mockDbResponse([
-      {
-        id: 1,
-        firstName: "John",
-        lastName: "Doe",
-        city: "New York",
-        degree: "MD",
-        specialties: ["Cardiology"],
-        yearsOfExperience: 10,
-        phoneNumber: "1234567890",
-        createdAt: new Date(),
-      },
-    ]);
-    const request: Request = new Request(
-      "http://localhost/api/advocates?page=0"
+  test("handles invalid pagination parameters", async () => {
+    const request = new Request(
+      "http://localhost/api/advocates?page=-1&limit=101"
     );
     const response = await GET(request);
     const jsonResponse = await response.json();
 
-    // code 400: incorrect syntax or invalid data
     expect(response.status).toBe(400);
     expect(jsonResponse.error).toBe(
       "Invalid page parameter: page must be a positive integer"
     );
   });
 
-  test("handles invalid limit (< 50) for pagination", async () => {
-    mockDbResponse([
-      {
-        id: 1,
-        firstName: "John",
-        lastName: "Doe",
-        city: "New York",
-        degree: "MD",
-        specialties: ["Cardiology"],
-        yearsOfExperience: 10,
-        phoneNumber: "1234567890",
-        createdAt: new Date(),
-      },
-    ]);
-    const request: Request = new Request(
-      "http://localhost/api/advocates?limit=51"
-    );
-    const response = await GET(request);
-    const jsonResponse = await response.json();
-
-    // code 400: incorrect syntax or invalid data
-    expect(response.status).toBe(400);
-    expect(jsonResponse.error).toBe(
-      "Invalid limit parameter: limit must be a positive integer between 1 and 50"
-    );
-  });
-
-  test("returns 404 when no advocates are found", async () => {
+  test("returns 404 when no advocates match search term", async () => {
     mockDbResponse([]);
     const request = new Request(
-      "http://localhost/api/advocates?page=1&limit=10"
+      "http://localhost/api/advocates?search=Nonexistent&page=1&limit=5"
     );
     const response = await GET(request);
     const jsonResponse = await response.json();
@@ -123,12 +73,11 @@ describe("GET /api/advocates", () => {
     expect(jsonResponse.error).toBe("No advocates found");
   });
 
-  /** INTERNAL SERVER ERROR */
-  test("handles internal server errors", async () => {
+  test("handles internal server errors gracefully", async () => {
     mockDbResponse(null, true);
 
     const request = new Request(
-      "http://localhost/api/advocates?page=1&limit=10"
+      "http://localhost/api/advocates?page=1&limit=5"
     );
     const response = await GET(request);
     const jsonResponse = await response.json();

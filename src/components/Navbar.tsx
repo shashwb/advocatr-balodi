@@ -35,7 +35,7 @@ const Navbar = (): JSX.Element => {
 
   return (
     <header className="py-4 shadow bg-white">
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-8 flex justify-between items-center">
         <h1 className="logo text-4xl font-bold">Advocatr</h1>
         <DarkModeToggle handleToggle={toggleDarkTheme} />
       </div>

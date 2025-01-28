@@ -7,6 +7,11 @@ const setup = () => {
     return {
       select: () => ({
         from: () => ({
+          where: () => ({
+            limit: () => ({
+              offset: () => Promise.resolve([]),
+            }),
+          }),
           limit: () => ({
             offset: () => Promise.resolve([]),
           }),
