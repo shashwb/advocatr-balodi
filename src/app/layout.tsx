@@ -33,26 +33,37 @@ export default function RootLayout({
   testMode?: boolean;
 }): JSX.Element {
   const content = (
-    <>
+    <div className="flex flex-col min-h-screen w-full">
       <Navbar />
-      <main id="appContainer" className="max-w-7xl mx-auto p-6 rounded-3xl">
+      <main
+        id="appContainer"
+        className="flex-grow w-full max-w-7xl mx-auto p-6 rounded-3xl"
+      >
         {children}
       </main>
       <Footer />
-    </>
+    </div>
   );
 
   if (testMode) {
     return (
-      <div lang="en" className={inter.className}>
-        <div className="bg-gray-300 text-gray-800">{content}</div>
+      <div
+        lang="en"
+        className={`${inter.className} min-h-screen flex flex-col`}
+      >
+        <div className="bg-gray-300 text-gray-800 flex-grow">{content}</div>
       </div>
     );
   }
 
   return (
     <html lang="en" className={inter.className}>
-      <body className="bg-gray-300 text-gray-800">{content}</body>
+      <body
+        id="contentBody"
+        className="text-gray-800 min-h-screen flex flex-col"
+      >
+        {content}
+      </body>
     </html>
   );
 }

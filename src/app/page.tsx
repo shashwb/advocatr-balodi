@@ -2,6 +2,11 @@
 
 import { useEffect, useState } from "react";
 
+import { Advocate } from "@/types/advocates";
+
+/** components */
+import AdvocateList from "@/components/AdvocateList";
+
 /**
  * IMPROVEMENTS:
  *  + ensure strong typing using TS
@@ -10,17 +15,6 @@ import { useEffect, useState } from "react";
  *  + implmeneted consistent styling using Tailwind
  *  + applicaiton is generally cleaned up and ready for new features
  */
-
-interface Advocate {
-  id: number;
-  firstName: string;
-  lastName: string;
-  city: string;
-  degree: string;
-  specialties: string[];
-  yearsOfExperience: number;
-  phoneNumber: number;
-}
 
 interface AdvocateAPIResponse {
   data: Advocate[];
@@ -89,63 +83,24 @@ export default function Home(): JSX.Element {
     setFilteredAdvocates(filteredAdvocates);
   };
 
-  /** as long as keys are strings, we ensure order */
-  const headersMap: Record<string, string> = {
-    firstName: "First Name",
-    lastName: "Last Name",
-    city: "City",
-    degree: "Degree",
-    specialties: "Specialties",
-    yearsOfExperience: "Experience",
-    phoneNumber: "Phone",
-  };
-
-  /**
-   * @param {string} header - The table header string
-   * @returns {JSX.Element} A <th> element with the header string
-   */
-  const tableHeaderCell = (header: string): JSX.Element => (
-    <th key={header} className="border border-gray-300 px-4 py-2">
-      {header}
-    </th>
-  );
-
-  /**
-   * Creates a <td> element with the value of the given advocate and key.
-   * @param {Advocate} advocate - The advocate object
-   * @param {keyof Advocate} key - The key of the advocate object
-   * @returns {JSX.Element} A <td> element with the value of the given advocate and key
-   */
-  const tableDataCell = (
-    advocate: Advocate,
-    key: keyof Advocate
-  ): JSX.Element => {
-    const cellValue = advocate[key];
-    return (
-      <td
-        key={`${advocate.id}-${key}`}
-        className="border border-gray-300 px-4 py-2"
-      >
-        {Array.isArray(cellValue) ? cellValue.join(", ") : cellValue}
-      </td>
-    );
-  };
-
   return (
     <div className="max-w-7xl mx-auto p-2">
       {/* TITLE SECTION */}
-      <h1 className="text-2xl font-bold mb-6">Solace Advocates Finder</h1>
+      <h1 className="text-3xl font-extrabold mb-4">Solace Advocates Finder</h1>
 
       {/* SEARCH SECTION */}
-      <div className="mb-10">
-        <label htmlFor="searchbar" className="block text-md font-medium p-2">
+      <div className="mb-7">
+        <label
+          htmlFor="searchbar"
+          className="block text-md font-medium p-2 text-teal-900 dark:text-teal-300"
+        >
           Search Advocates
         </label>
         <input
           id="searchbar"
           type="text"
           // lets make this look a little nicer
-          className="w-full px-4 py-2 border border-gray-300 rounded-3xl focus:outline-none focus:ring-2 focus:ring-teal-500"
+          className="w-full px-4 text-teal-800 bg-teal-50 py-2 border border-gray-300 rounded-3xl focus:outline-none focus:ring-2 focus:ring-teal-500"
           placeholder="Search by name, city, or specialty..."
           value={searchTerm}
           onChange={handleSearchInputChange}
@@ -163,27 +118,9 @@ export default function Home(): JSX.Element {
         </div>
       )}
 
-      {/* ADVOCATES TABLE (will be own component) */}
-      <table className="w-full table-auto border-collapse border border-gray-400 shadow-sm">
-        <thead className="bg-gray-100 text-gray-700">
-          <tr>
-            {Object.values(headersMap).map((header) => {
-              return tableHeaderCell(header);
-            })}
-          </tr>
-        </thead>
-        <tbody>
-          {filteredAdvocates.map((advocate) => {
-            return (
-              <tr key={advocate.id}>
-                {Object.keys(headersMap).map((headerKey) =>
-                  tableDataCell(advocate, headerKey as keyof Advocate)
-                )}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <div id="advocateListHolder" className="mx-4 p-2">
+        <AdvocateList advocates={filteredAdvocates as Advocate[]} />
+      </div>
     </div>
   );
 }
