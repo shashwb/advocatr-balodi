@@ -8,13 +8,6 @@ import Footer from "@/components/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
-/**
- * IMPROVEMENTS:
- *  + beginning of dark mode support
- *  + global navbar and footer
- *  + basic padding and centering, added container for main content
- */
-
 export const metadata: Metadata = {
   title: "Advocatr - Find your Advocate",
   description: "Seth Balodi's attempt at the Solace assignment :)",

@@ -14,7 +14,7 @@ export async function GET(request: Request) {
     const search = url.searchParams.get("search")?.toLowerCase() || "";
 
     const page = pageParam ? parseInt(pageParam) : 1;
-    const limit = limitParam ? parseInt(limitParam) : 10;
+    const limit = limitParam ? parseInt(limitParam) : 9;
 
     // Validate pagination parameters
     if (isNaN(page) || page < 1) {

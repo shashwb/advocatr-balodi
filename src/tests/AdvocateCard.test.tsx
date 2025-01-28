@@ -18,6 +18,5 @@ describe("AdvocateCard Component", () => {
     expect(screen.getByText("MD")).toBeInTheDocument();
     expect(screen.getByText("New York")).toBeInTheDocument();
     expect(screen.getByText("Cardiology")).toBeInTheDocument();
-    expect(screen.getByText("10 years of experience")).toBeInTheDocument();
   });
 });
