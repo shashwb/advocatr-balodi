@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
 import { Advocate } from "@/types/advocates";
 
 /** components */
 import AdvocateList from "@/components/AdvocateList";
+import SearchBar from "@/components/SearchBar";
 
 /**
  * IMPROVEMENTS:
@@ -105,6 +105,12 @@ export default function Home(): JSX.Element {
           value={searchTerm}
           onChange={handleSearchInputChange}
         />
+        <div>
+          testing
+          <div>
+            <SearchBar />
+          </div>
+        </div>
       </div>
 
       {/* DATA SECTION */}
