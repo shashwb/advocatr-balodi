@@ -16,8 +16,6 @@ export async function GET(request: Request) {
     const page = pageParam ? parseInt(pageParam) : 1;
     const limit = limitParam ? parseInt(limitParam) : 10;
 
-    console.log("page", page, "limit", limit);
-
     // Validate pagination parameters
     if (isNaN(page) || page < 1) {
       return NextResponse.json(
@@ -36,25 +34,27 @@ export async function GET(request: Request) {
     }
 
     const offset = (page - 1) * limit;
+    let advocatesDbResponse;
 
-    const advocatesDbResponse = await db
-      .select()
-      .from(advocates)
-      .where(
-        sql`${advocates.firstName} ILIKE ${`%${search}%`} OR
-         ${advocates.lastName} ILIKE ${`%${search}%`} OR
-         ${advocates.city} ILIKE ${`%${search}%`} OR
-         ${advocates.degree} ILIKE ${`%${search}%`} OR
-         EXISTS (
-           SELECT 1
-           FROM jsonb_array_elements_text(${advocates.specialties}) AS specialty
-           WHERE specialty ILIKE ${`%${search}%`}
-         )`
-      )
-      .limit(limit)
-      .offset(offset);
-
-    console.log("advocatesDbResponse", advocatesDbResponse);
+    if (search === "") {
+      advocatesDbResponse = await db
+        .select()
+        .from(advocates)
+        .limit(limit)
+        .offset(offset);
+    } else {
+      advocatesDbResponse = await db
+        .select()
+        .from(advocates)
+        .where(
+          sql`${advocates.firstName} ILIKE ${`%${search}%`} OR
+             ${advocates.lastName} ILIKE ${`%${search}%`} OR
+             ${advocates.city} ILIKE ${`%${search}%`} OR
+             ${advocates.degree} ILIKE ${`%${search}%`}`
+        )
+        .limit(limit)
+        .offset(offset);
+    }
 
     // Handle no results
     if (advocatesDbResponse.length === 0) {
@@ -67,7 +67,7 @@ export async function GET(request: Request) {
     // Map results to Advocate type
     const data: Advocate[] = advocatesDbResponse.map((record) => ({
       ...record,
-      specialties: Array.isArray(record.specialties) ? record.specialties : [],
+      specialties: record.specialties as string[],
     }));
 
     // Return the paginated response

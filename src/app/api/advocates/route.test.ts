@@ -1,7 +1,11 @@
 import { GET } from "./route"; // GET handler for /api/advocates
 import db from "../../../db"; // Mock database
 
-jest.mock("../../../db");
+// jest.mock("../../../db");
+
+jest.mock("../../../db", () => ({
+  select: jest.fn(),
+}));
 
 const mockDbResponse = (returnValue: any, shouldError: boolean = false) => {
   const mockChain = {
@@ -15,6 +19,29 @@ const mockDbResponse = (returnValue: any, shouldError: boolean = false) => {
 
   (db.select as jest.Mock).mockReturnValue(mockChain);
 };
+
+// jest.mock("../../../db", () => ({
+//   __esModule: true,
+//   default: {
+//     select: jest.fn().mockReturnThis(),
+//     from: jest.fn().mockReturnThis(),
+//     where: jest.fn().mockReturnThis(),
+//     limit: jest.fn().mockReturnThis(),
+//     offset: jest.fn().mockResolvedValue([]),
+//   },
+// }));
+
+// const mockDbResponse = (returnValue: any, shouldError: boolean = false) => {
+//   const mockChain = {
+//     from: jest.fn().mockReturnThis(),
+//     limit: jest.fn().mockReturnThis(),
+//     offset: shouldError
+//       ? jest.fn().mockRejectedValue(new Error("Database error"))
+//       : jest.fn().mockResolvedValue(returnValue),
+//   };
+
+//   (db.select as jest.Mock).mockReturnValue(mockChain);
+// };
 
 describe("/api/advocates GET", () => {
   beforeEach(() => {
@@ -54,7 +81,9 @@ describe("/api/advocates GET", () => {
     const jsonResponse = await response.json();
 
     expect(response.status).toBe(400);
-    expect(jsonResponse.error).toBe("Invalid pagination parameters");
+    expect(jsonResponse.error).toBe(
+      "Invalid page parameter: page must be a positive integer"
+    );
   });
 
   test("returns 404 when no advocates match search term", async () => {

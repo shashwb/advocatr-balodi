@@ -7,10 +7,13 @@ const setup = () => {
     return {
       select: () => ({
         from: () => ({
-          where: (callback: any) => ({
-            limit: (limit: number) => ({
-              offset: (offset: number) => Promise.resolve([]),
+          where: () => ({
+            limit: () => ({
+              offset: () => Promise.resolve([]),
             }),
+          }),
+          limit: () => ({
+            offset: () => Promise.resolve([]),
           }),
         }),
       }),
